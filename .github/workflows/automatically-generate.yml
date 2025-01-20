@@ -1,0 +1,43 @@
+name: automatically-generate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# on:
+  # schedule:
+    # - cron: '0 3 * * *'
+    
+jobs:
+  run_program:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Pull sing-box-rule-set
+        uses: actions/checkout@main
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.22.10'
+
+      - name: Pull ios_rule_script
+        uses: actions/checkout@master
+        with:
+          repository: blackmatrix7/ios_rule_script  
+          path: ios_rule_script  
+
+      - name: run
+        run: |
+          go install github.com/W0n9CNer/yaml2srs/cmd/yaml2srs@latest
+          yaml2srs folder -p ios_rule_script/rule/Clash -o rule
+      - name: push sing-box-rule-set
+        run: |
+          git config --global user.name "W0n9CNer"
+          git config --global user.email "wongcner@icloud.com"
+          commit_message=$(date +"%Y-%m-%d")
+          git add .
+          git diff-index --quiet HEAD || git commit -m "$commit_message"
+          git push
