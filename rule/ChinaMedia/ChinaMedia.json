@@ -397,6 +397,14 @@
         "::ffff:60.171.183.161/128",
         "::ffff:60.171.183.186/128",
         "::ffff:60.171.183.98/128"
+      ],
+      "process_name": [
+        "com.bilibili.app.blue",
+        "com.bilibili.app.in",
+        "com.bilibili.comic",
+        "com.bilibili.comic.intl",
+        "tv.danmaku.bili",
+        "tv.danmaku.bilibilihd"
       ]
     }
   ]

@@ -15,6 +15,9 @@
         "hbonow.com",
         "max.com",
         "maxgo.com"
+      ],
+      "process_name": [
+        "com.hbo.hbonow"
       ]
     }
   ]

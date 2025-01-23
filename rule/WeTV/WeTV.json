@@ -16,6 +16,10 @@
       ],
       "ip_cidr": [
         "150.109.28.51/32"
+      ],
+      "process_name": [
+        "com.tencent.qqlivei18n",
+        "com.tencent.qqlivei18n.us"
       ]
     }
   ]

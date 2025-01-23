@@ -10,6 +10,9 @@
         "jjwxc.org",
         "jjycw.net",
         "robook.com"
+      ],
+      "process_name": [
+        "com.jjwxc.reader"
       ]
     }
   ]

@@ -55,6 +55,9 @@
         "registerhulu.com",
         "thehulubraintrust.com",
         "wwwhuluplus.com"
+      ],
+      "process_name": [
+        "com.hulu.plus"
       ]
     }
   ]

@@ -34,6 +34,10 @@
         "xunlei.cn",
         "xunlei.com",
         "xunlei.net"
+      ],
+      "process_name": [
+        "Thunder",
+        "Thunder.exe"
       ]
     }
   ]
