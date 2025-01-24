@@ -44,9 +44,6 @@
         "nflxvideo.net",
         "onetrust.com",
         "us-west-2.amazonaws.com"
-      ],
-      "process_name": [
-        "com.netflix.mediaclient"
       ]
     }
   ]

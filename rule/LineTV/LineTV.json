@@ -13,9 +13,6 @@
         "line-cdn.net",
         "line-scdn.net",
         "linetv.tw"
-      ],
-      "process_name": [
-        "com.linecorp.linetv"
       ]
     }
   ]

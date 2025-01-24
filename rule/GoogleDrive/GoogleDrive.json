@@ -10,9 +10,6 @@
         "drive.google.com",
         "googledrive.com",
         "googleusercontent.com"
-      ],
-      "process_name": [
-        "BackupandSync"
       ]
     }
   ]

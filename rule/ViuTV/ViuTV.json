@@ -11,11 +11,6 @@
         "viu.com",
         "viu.now.com",
         "viu.tv"
-      ],
-      "process_name": [
-        "com.viu.pad",
-        "com.viu.phone",
-        "com.vuclip.viu"
       ]
     }
   ]

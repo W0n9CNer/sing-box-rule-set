@@ -4,9 +4,6 @@
     {
       "domain_suffix": [
         "bilibili.tv"
-      ],
-      "process_name": [
-        "com.bstar.intl"
       ]
     }
   ]

@@ -10,10 +10,6 @@
         "cwseed.com",
         "cwtv.com",
         "thecwvideo.com"
-      ],
-      "process_name": [
-        "com.cw.fullepisodes.android",
-        "com.cw.seed.android"
       ]
     }
   ]

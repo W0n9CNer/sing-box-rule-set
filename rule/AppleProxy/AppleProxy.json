@@ -44,9 +44,6 @@
         "hls.itunes.apple.com",
         "ocsp.apple.com",
         "tv.apple.com"
-      ],
-      "process_name": [
-        "LookupViewService"
       ]
     }
   ]

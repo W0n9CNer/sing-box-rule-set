@@ -20,10 +20,6 @@
         "spoprod-a.akamaihd.net",
         "storage.live.com",
         "storage.msn.com"
-      ],
-      "process_name": [
-        "OneDrive",
-        "OneDriveUpdater"
       ]
     }
   ]

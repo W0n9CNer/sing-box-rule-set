@@ -674,10 +674,6 @@
         "sharepoint.com",
         "sharepointonline.com",
         "spoprod-a.akamaihd.net"
-      ],
-      "process_name": [
-        "OneDrive",
-        "OneDriveUpdater"
       ]
     }
   ]

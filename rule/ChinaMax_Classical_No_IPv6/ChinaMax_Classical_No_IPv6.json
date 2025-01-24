@@ -105465,22 +105465,6 @@
         "98.96.246.0/23",
         "99.77.241.0/24",
         "99.83.96.0/24"
-      ],
-      "process_name": [
-        "com.taobao.taobao",
-        "com.bilibili.app.blue",
-        "com.bilibili.app.in",
-        "com.bilibili.comic",
-        "com.bilibili.comic.intl",
-        "tv.danmaku.bili",
-        "tv.danmaku.bilibilihd",
-        "com.zhiliaoapp.musically",
-        "com.jjwxc.reader",
-        "com.xiaomi.mibrain.speech",
-        "小米云服务.exe",
-        "Thunder",
-        "Thunder.exe",
-        "com.qiyi.video"
       ]
     }
   ]

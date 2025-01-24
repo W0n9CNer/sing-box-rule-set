@@ -953,11 +953,6 @@
         "2620:120:e000::/40",
         "2a00:86c0::/32",
         "2a03:5640::/32"
-      ],
-      "process_name": [
-        "com.viu.pad",
-        "com.viu.phone",
-        "com.vuclip.viu"
       ]
     }
   ]
