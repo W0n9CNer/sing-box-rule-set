@@ -5,7 +5,6 @@
       "domain_suffix": [
         "10086.cn",
         "10086kuaixiu.com",
-        "117.161.2.5",
         "12530.com",
         "139.com",
         "andfx.cn",
@@ -39,6 +38,9 @@
         "monternet.com",
         "warmchina121.com",
         "zdsdp.com"
+      ],
+      "ip_cidr": [
+        "117.161.2.5"
       ]
     }
   ]
