@@ -1207,6 +1207,7 @@
         "applepaysupplies.tv",
         "applewallet.com",
         "applewallet.tv",
+        "appsto.re",
         "appstore.co.id",
         "appstore.com",
         "appstore.hk",
@@ -1529,6 +1530,7 @@
         "wwwipodlounge.com",
         "wwwmacbookair.com",
         "apple.comscoreresearch.com",
+        "apple.news",
         "appleenews.com",
         "applemusic.berlin",
         "applemusic.co",
@@ -1566,13 +1568,11 @@
         "musickit.net",
         "wwwapplemusic.com",
         "apple-dns.net",
-        "apple.news",
-        "appsto.re",
-        "cdn-apple.com",
         "digicert.com",
         "apple-cloudkit.com",
         "apple-livephotoskit.com",
-        "apzones.com"
+        "apzones.com",
+        "cdn-apple.com"
       ],
       "ip_cidr": [
         "139.178.128.0/18",
