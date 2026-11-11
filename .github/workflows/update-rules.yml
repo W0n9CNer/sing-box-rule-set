@@ -1,0 +1,151 @@
+name: update-rules
+
+on:
+  schedule:
+    # 每天 06:10 UTC 检查上游更新
+    - cron: '10 6 * * *'
+  workflow_dispatch:
+    inputs:
+      force_release:
+        description: '规则内容没有变化时也发布当前快照'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-rules
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TOOL_REPO: W0n9CNer/yaml2srs
+      UPSTREAM_REPO: blackmatrix7/ios_rule_script
+      MIN_RULES: '700'
+    steps:
+      - name: Checkout rule set repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # 辅助仓库放在 RUNNER_TEMP, 避免嵌套 git 仓库被 git add -A 带进提交。
+      - name: Clone yaml2srs
+        run: git clone --depth 1 "https://github.com/${TOOL_REPO}.git" "$RUNNER_TEMP/yaml2srs"
+
+      - name: Clone upstream rules (sparse)
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse \
+            "https://github.com/${UPSTREAM_REPO}.git" "$RUNNER_TEMP/ios_rule_script"
+          git -C "$RUNNER_TEMP/ios_rule_script" sparse-checkout set rule/Clash
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ runner.temp }}/yaml2srs/go.mod
+          cache: false
+
+      - name: Build yaml2srs
+        run: |
+          set -euo pipefail
+          CGO_ENABLED=0 go build -C "$RUNNER_TEMP/yaml2srs" -trimpath \
+            -o "$RUNNER_TEMP/yaml2srs/yaml2srs" ./cmd/yaml2srs
+          "$RUNNER_TEMP/yaml2srs/yaml2srs" version
+
+      # 先生成到临时目录, 数量校验通过后才替换仓库里的 rule/, 失败时工作区保持原样。
+      - name: Generate rule sets
+        run: |
+          set -euo pipefail
+          stage="$RUNNER_TEMP/stage"
+          rm -rf "$stage"
+          "$RUNNER_TEMP/yaml2srs/yaml2srs" folder \
+            -p "$RUNNER_TEMP/ios_rule_script/rule/Clash" -o "$stage"
+          count=$(find "$stage" -name '*.srs' | wc -l)
+          echo "generated $count rule sets"
+          if [ "$count" -lt "$MIN_RULES" ]; then
+            echo "::error::generated $count rule sets, below MIN_RULES=$MIN_RULES"
+            exit 1
+          fi
+          rm -rf rule
+          mv "$stage" rule
+
+      - name: Commit and push
+        id: publish
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          changed=false
+          if ! git diff-index --quiet HEAD --; then
+            git commit -m "$(date -u +%F)"
+            pushed=false
+            for attempt in 1 2 3; do
+              if git push origin HEAD:main; then
+                pushed=true
+                break
+              fi
+              echo "push 失败(第 $attempt 次), rebase 后重试"
+              git fetch --depth 1 origin main
+              if ! git rebase FETCH_HEAD; then
+                git rebase --abort || true
+                exit 1
+              fi
+            done
+            if [ "$pushed" != true ]; then
+              echo "::error::push failed after 3 attempts"
+              exit 1
+            fi
+            changed=true
+          fi
+          {
+            echo "changed=$changed"
+            echo "sha=$(git rev-parse HEAD)"
+            echo "date=$(date -u +%F)"
+          } >> "$GITHUB_OUTPUT"
+
+      # release 只包含 srs 与 srs.md5, 不含 json/yaml。
+      - name: Package srs
+        if: steps.publish.outputs.changed == 'true' || github.event.inputs.force_release == 'true'
+        run: |
+          set -euo pipefail
+          tag="srs-${{ steps.publish.outputs.date }}"
+          asset="$RUNNER_TEMP/$tag.tar.gz"
+          find rule -type f \( -name '*.srs' -o -name '*.srs.md5' \) -print \
+            | sort | tar -czf "$asset" -T -
+          {
+            echo "tag=$tag"
+            echo "asset=$asset"
+          } >> "$GITHUB_ENV"
+
+      - name: Publish release
+        if: steps.publish.outputs.changed == 'true' || github.event.inputs.force_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          count=$(find rule -name '*.srs' | wc -l)
+          upstream_sha=$(git -C "$RUNNER_TEMP/ios_rule_script" rev-parse --short HEAD)
+          tool_sha=$(git -C "$RUNNER_TEMP/yaml2srs" rev-parse --short HEAD)
+          cat > "$RUNNER_TEMP/release-notes.md" <<EOF
+          sing-box srs 规则集快照, 仅包含 .srs 与 .srs.md5。
+
+          - 规则集数量: $count
+          - 上游提交: $UPSTREAM_REPO@$upstream_sha
+          - 生成工具: $TOOL_REPO@$tool_sha
+          - 生成时间: $(date -u '+%F %T UTC')
+
+          解压后可在根目录校验:
+          find rule -name '*.srs.md5' -execdir md5sum -c {} \;
+          EOF
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$asset" --clobber
+          else
+            gh release create "$tag" "$asset" \
+              --title "$tag" \
+              --target "${{ steps.publish.outputs.sha }}" \
+              --notes-file "$RUNNER_TEMP/release-notes.md"
+          fi
