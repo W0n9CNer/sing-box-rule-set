@@ -42,6 +42,11 @@
         "trae.ai",
         "ttwebview.com"
       ]
+    },
+    {
+      "process_name": [
+        "com.zhiliaoapp.musically"
+      ]
     }
   ]
 }

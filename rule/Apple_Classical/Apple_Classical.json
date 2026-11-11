@@ -1589,6 +1589,23 @@
         "2620:149::/32",
         "2a01:b740::/32"
       ]
+    },
+    {
+      "process_name": [
+        "CoreLocationAgent",
+        "WeatherWidget",
+        "apsd",
+        "com.apple.Maps",
+        "findmydevice-user-agent",
+        "fmfd",
+        "mapspushd",
+        "netbiosd",
+        "trustd",
+        "com.apple.geod",
+        "Music",
+        "LookupViewService",
+        "TV"
+      ]
     }
   ]
 }

@@ -33,6 +33,11 @@
         "primevideo.tv",
         "pv-cdn.net"
       ]
+    },
+    {
+      "process_name": [
+        "com.amazon.avod.thirdpartyclient"
+      ]
     }
   ]
 }

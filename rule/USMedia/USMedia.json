@@ -103,6 +103,13 @@
         "watchespn.com",
         "wwwhuluplus.com"
       ]
+    },
+    {
+      "process_name": [
+        "com.cbs.app",
+        "com.hulu.plus",
+        "com.showtime.standalone"
+      ]
     }
   ]
 }

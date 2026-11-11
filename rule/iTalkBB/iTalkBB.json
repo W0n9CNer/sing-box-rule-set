@@ -7,6 +7,11 @@
         "italkbb.com",
         "italkbbtv.com"
       ]
+    },
+    {
+      "process_name": [
+        "com.italkbbtv.phone"
+      ]
     }
   ]
 }

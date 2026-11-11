@@ -209,6 +209,13 @@
         "zkscan.io",
         "zksync.io"
       ]
+    },
+    {
+      "process_name": [
+        "Binance.exe",
+        "Huobi.exe",
+        "OKX.exe"
+      ]
     }
   ]
 }

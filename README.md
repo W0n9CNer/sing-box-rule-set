@@ -8,7 +8,7 @@
 本仓库由 **AI agent 自动维护**,不再使用 GitHub Actions,日常没有任何人工介入:
 
 - 每天自动检查上游 `rule/Clash` 是否有更新;
-- 用 yaml2srs 重新生成 `rule/<名称>/<名称>.json` 和 `.srs`;
+- 用 yaml2srs 重新生成 `rule/<名称>/` 下的全部文件(`.json`、`.min.json`、`.srs`、`.srs.md5` 和原始 `.yaml`);
 - 上游有变化时自动提交并推送回本仓库(提交信息为 UTC 日期),无变化则不产生提交。
 
 提交历史里的每次更新都来自这条自动化流程。如果发现某个规则集内容异常(条目缺失、与上游对不上等),欢迎开 issue 说明规则集名称,会有人核对上游源文件与生成结果。
@@ -41,9 +41,17 @@
 
 ## 说明
 
-- 规则集只包含 Clash 规则里能表达的部分(DOMAIN / DOMAIN-SUFFIX / DOMAIN-KEYWORD / DOMAIN-REGEX / IP-CIDR / IP-CIDR6);
-  `PROCESS-NAME`、`IP-ASN` 等类型不会出现在规则集里。
+- 规则集只包含 Clash 规则里能表达的部分(DOMAIN / DOMAIN-SUFFIX / DOMAIN-KEYWORD / DOMAIN-REGEX /
+  IP-CIDR / IP-CIDR6 / IP-SUFFIX / SRC-IP-CIDR / SRC-IP-SUFFIX / DST-PORT / SRC-PORT /
+  PROCESS-NAME / PROCESS-PATH / PROCESS-PATH-WILDCARD / PROCESS-PATH-REGEX);`IP-ASN`、`GEOIP`
+  等类型不会出现在规则集里。
+- 每个 `rule/<名称>/` 目录包含 `<名称>.json`(带缩进)、`<名称>.min.json`(未格式化)、
+  `<名称>.srs`、`<名称>.srs.md5`(md5sum 格式,可用 `md5sum -c` 校验)以及
+  `<名称>.yaml`(或 `.yml`,生成该规则集的原始上游文件,按原字节复制)。
 - 部分规则集(如 ChinaMax、Apple、Netflix)会同时合并上游同名的 `_Classical.yaml`,否则主文件只剩少量条目;
-  上游以 `_Resolve.yaml` 结尾的变体是 Clash fake-ip 专用,不参与生成。
+  合并后的规则集附带的是主文件,`_Classical.yaml` 仍会作为独立规则集输出。上游以 `_Resolve.yaml`
+  结尾的变体是 Clash fake-ip 专用,不参与生成。
+- 混合类型规则集(例如同时含域名和进程规则)会拆成多条 rule,保持 Clash 规则集中
+  每一行独立匹配(OR)的语义。
 - srs 为二进制格式版本 1,兼容各版本 sing-box。
 - 规则数量以仓库 `rule/` 目录为准,上游新增或删除规则时会同步增删。

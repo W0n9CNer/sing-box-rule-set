@@ -67,6 +67,11 @@
         "203.174.77.0/24",
         "2400:dcc0::/32"
       ]
+    },
+    {
+      "process_name": [
+        "com.linecorp.linetv"
+      ]
     }
   ]
 }

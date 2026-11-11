@@ -13,6 +13,11 @@
         "unityedu.com",
         "unityedu.com.cn"
       ]
+    },
+    {
+      "process_name": [
+        "UnityHub.exe"
+      ]
     }
   ]
 }
