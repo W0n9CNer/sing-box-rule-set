@@ -3,20 +3,20 @@
 用于 sing-box 的二进制规则集(srs)与 json 规则集,由 [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)
 的 `rule/Clash` 规则转换而来,转换工具为 [yaml2srs](https://github.com/W0n9CNer/yaml2srs)。
 
-## 维护方式
+## 更新
 
-本仓库由 GitHub Actions 自动维护([`update-rules.yml`](.github/workflows/update-rules.yml)),日常没有人工介入:
+规则集每天自动从 [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)
+的 `rule/Clash` 同步一次,由 [yaml2srs](https://github.com/W0n9CNer/yaml2srs) 转换生成,
+`rule/` 目录始终保持最新,无需手动操作。
 
-- 每天 06:10 UTC 检查上游 `rule/Clash` 是否有更新,也支持在 Actions 页面手动触发;
-- runner 上从源码编译 [yaml2srs](https://github.com/W0n9CNer/yaml2srs),重新生成 `rule/<名称>/` 下的全部文件(`.json`、`.min.json`、`.srs`、`.srs.md5` 和原始 `.yaml`);
-- 上游有变化时自动提交并推送回本仓库(提交信息为 UTC 日期),无变化则不产生提交;
-- 同一次运行里,有变化时还会把本次生成的 `.srs` 和 `.srs.md5` 打包成 `srs-<UTC 日期>.tar.gz` 发布到 Releases;手动触发时可勾选 `force_release`,内容无变化也发布当前快照。
-
-`rule/` 目录始终是主要发布物:每次运行都会重新生成并提交。Releases 只是把同一份生成结果中的 `.srs` 额外打包,不会替代仓库更新。
-
-提交历史里的每次更新都来自这条自动化流程。如果发现某个规则集内容异常(条目缺失、与上游对不上等),欢迎开 issue 说明规则集名称,会有人核对上游源文件与生成结果。
+如果发现某个规则集内容异常(条目缺失、与上游对不上等),欢迎开 issue 说明规则集名称,
+会有人核对上游源文件与生成结果。
 
 ## 使用
+
+### 远程规则集
+
+让 sing-box 按需从仓库的 raw 地址下载,`format` 固定为 `binary`:
 
 ```json
 {
@@ -40,7 +40,36 @@
 }
 ```
 
-本地使用时把 `type` 改为 `local`,`path` 指向下载下来的 `.srs` 文件即可。
+`download_detour` 可选,用于指定下载规则集的出站;不需要时可以删掉。
+
+### 本地规则集
+
+从 [Releases](#releases) 下载 `srs-<UTC 日期>.tar.gz` 并解压,会得到 `rule/<名称>/<名称>.srs`。
+把 `type` 改为 `local`,用 `path` 指向该文件即可,不再需要 `url` 和 `download_detour`:
+
+```json
+{
+  "route": {
+    "rule_set": [
+      {
+        "type": "local",
+        "tag": "ChinaMax",
+        "format": "binary",
+        "path": "/etc/sing-box/rule/ChinaMax.srs"
+      }
+    ],
+    "rules": [
+      {
+        "rule_set": "ChinaMax",
+        "outbound": "direct"
+      }
+    ]
+  }
+}
+```
+
+`path` 可以写绝对路径,也可以写相对 sing-box 工作目录的路径;Windows 下建议使用正斜杠
+(如 `"path": "C:/sing-box/rule/ChinaMax.srs"`)或在 JSON 中转义反斜杠。
 
 ## Releases
 
@@ -51,7 +80,7 @@
   `https://github.com/W0n9CNer/sing-box-rule-set/releases/download/srs-<UTC 日期>/srs-<UTC 日期>.tar.gz`;
 - 解压后在根目录执行 `find rule -name '*.srs.md5' -execdir md5sum -c {} \;` 即可校验。
 
-需要单个规则集的最新版本时,仍然可以直接使用仓库里的 raw 链接(见上方"使用")。
+需要单个规则集的最新版本时,直接使用仓库里的 raw 链接即可(见上方"使用")。
 
 ## 支持的规则类型
 
