@@ -10,7 +10,9 @@
 - 每天 06:10 UTC 检查上游 `rule/Clash` 是否有更新,也支持在 Actions 页面手动触发;
 - runner 上从源码编译 [yaml2srs](https://github.com/W0n9CNer/yaml2srs),重新生成 `rule/<名称>/` 下的全部文件(`.json`、`.min.json`、`.srs`、`.srs.md5` 和原始 `.yaml`);
 - 上游有变化时自动提交并推送回本仓库(提交信息为 UTC 日期),无变化则不产生提交;
-- 有变化时额外把本次生成的 `.srs` 和 `.srs.md5` 打包成 `srs-<UTC 日期>.tar.gz` 发布到 Releases;手动触发时可勾选 `force_release`,内容无变化也发布当前快照。
+- 同一次运行里,有变化时还会把本次生成的 `.srs` 和 `.srs.md5` 打包成 `srs-<UTC 日期>.tar.gz` 发布到 Releases;手动触发时可勾选 `force_release`,内容无变化也发布当前快照。
+
+`rule/` 目录始终是主要发布物:每次运行都会重新生成并提交。Releases 只是把同一份生成结果中的 `.srs` 额外打包,不会替代仓库更新。
 
 提交历史里的每次更新都来自这条自动化流程。如果发现某个规则集内容异常(条目缺失、与上游对不上等),欢迎开 issue 说明规则集名称,会有人核对上游源文件与生成结果。
 

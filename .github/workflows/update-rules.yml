@@ -107,12 +107,30 @@ jobs:
             echo "date=$(date -u +%F)"
           } >> "$GITHUB_OUTPUT"
 
+      # 确保仓库 HEAD 里的 rule/ 就是本次生成的完整结果, release 不会替代这次提交。
+      - name: Verify rule directory
+        run: |
+          set -euo pipefail
+          on_disk=$(find rule -name '*.srs' | wc -l)
+          tracked=$(git ls-tree -r --name-only HEAD -- rule | grep -c '\.srs$' || true)
+          echo "rule/: $on_disk .srs on disk, $tracked .srs tracked in HEAD $(git rev-parse --short HEAD)"
+          if [ "$on_disk" -lt "$MIN_RULES" ]; then
+            echo "::error::rule/ has $on_disk rule sets, below MIN_RULES=$MIN_RULES"
+            exit 1
+          fi
+          if [ "$tracked" -ne "$on_disk" ]; then
+            echo "::error::rule/ in HEAD does not match generated files ($tracked != $on_disk)"
+            exit 1
+          fi
+
       # release 只包含 srs 与 srs.md5, 不含 json/yaml。
       - name: Package srs
         if: steps.publish.outputs.changed == 'true' || github.event.inputs.force_release == 'true'
+        env:
+          COMMIT_DATE: ${{ steps.publish.outputs.date }}
         run: |
           set -euo pipefail
-          tag="srs-${{ steps.publish.outputs.date }}"
+          tag="srs-$COMMIT_DATE"
           asset="$RUNNER_TEMP/$tag.tar.gz"
           find rule -type f \( -name '*.srs' -o -name '*.srs.md5' \) -print \
             | sort | tar -czf "$asset" -T -
@@ -125,15 +143,19 @@ jobs:
         if: steps.publish.outputs.changed == 'true' || github.event.inputs.force_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          COMMIT_SHA: ${{ steps.publish.outputs.sha }}
         run: |
           set -euo pipefail
           count=$(find rule -name '*.srs' | wc -l)
           upstream_sha=$(git -C "$RUNNER_TEMP/ios_rule_script" rev-parse --short HEAD)
           tool_sha=$(git -C "$RUNNER_TEMP/yaml2srs" rev-parse --short HEAD)
+          commit_sha="$COMMIT_SHA"
           cat > "$RUNNER_TEMP/release-notes.md" <<EOF
           sing-box srs 规则集快照, 仅包含 .srs 与 .srs.md5。
+          仓库 rule/ 目录已在同一次运行中更新并推送, release 只是同一份结果的附加打包。
 
           - 规则集数量: $count
+          - 仓库提交: ${commit_sha:0:7}
           - 上游提交: $UPSTREAM_REPO@$upstream_sha
           - 生成工具: $TOOL_REPO@$tool_sha
           - 生成时间: $(date -u '+%F %T UTC')
@@ -146,6 +168,6 @@ jobs:
           else
             gh release create "$tag" "$asset" \
               --title "$tag" \
-              --target "${{ steps.publish.outputs.sha }}" \
+              --target "$COMMIT_SHA" \
               --notes-file "$RUNNER_TEMP/release-notes.md"
           fi
